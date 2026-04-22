@@ -107,9 +107,8 @@ function App() {
             saveState('soulsync_chat', updated);
             return updated;
           });
-          if (view !== 'dashboard') {
-            sendLocalNotification(`Chat de ${profile.partnerName}`, receivedState.text);
-          }
+          
+          sendLocalNotification(`Chat de ${profile.partnerName}`, receivedState.text);
         } else if (receivedState.type === 'status') {
           setPartnerState(receivedState);
           saveState('soulsync_partner_state', receivedState);
