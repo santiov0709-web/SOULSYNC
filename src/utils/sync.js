@@ -95,6 +95,46 @@ export const subscribeToPartner = (topic, onMessage) => {
 };
 
 /**
+ * Fetches the most recent state and chat messages from Supabase
+ */
+export const fetchLatestState = async (topic) => {
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('payload')
+      .eq('topic', topic)
+      .eq('type', 'status')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    
+    if (error) throw error;
+    return data[0]?.payload || null;
+  } catch (error) {
+    console.error('Error fetching latest state:', error);
+    return null;
+  }
+};
+
+export const fetchChatHistory = async (topic, limit = 50) => {
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('payload')
+      .eq('topic', topic)
+      .eq('type', 'chat')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    
+    if (error) throw error;
+    // Reverse to get chronological order
+    return data.map(item => item.payload).reverse();
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    return [];
+  }
+};
+
+/**
  * Requests notification permission
  */
 export const requestNotificationPermission = async () => {

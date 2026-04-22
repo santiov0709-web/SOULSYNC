@@ -7,7 +7,7 @@ import Onboarding from './components/Onboarding';
 import { Share2, RefreshCw, Heart, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSound } from './utils/audio';
-import { getCoupleTopic, publishState, subscribeToPartner, requestNotificationPermission, sendLocalNotification } from './utils/sync';
+import { getCoupleTopic, publishState, subscribeToPartner, requestNotificationPermission, sendLocalNotification, fetchLatestState, fetchChatHistory } from './utils/sync';
 
 function App() {
   const [profile, setProfile] = useState(
@@ -57,6 +57,29 @@ function App() {
     }
     return null;
   }, [profile.myName, profile.partnerName]);
+
+  useEffect(() => {
+    // Initial fetch from Supabase to ensure persistence
+    if (!coupleTopic) return;
+
+    const loadInitialData = async () => {
+      // Fetch latest state
+      const latestState = await fetchLatestState(coupleTopic);
+      if (latestState) {
+        setPartnerState(latestState);
+        saveState('soulsync_partner_state', latestState);
+      }
+
+      // Fetch chat history
+      const history = await fetchChatHistory(coupleTopic);
+      if (history.length > 0) {
+        setChatMessages(history);
+        saveState('soulsync_chat', history);
+      }
+    };
+
+    loadInitialData();
+  }, [coupleTopic]);
 
   useEffect(() => {
     // Real-time Sync Logic (Ntfy)
