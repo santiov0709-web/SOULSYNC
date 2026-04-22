@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import Onboarding from './components/Onboarding';
 import { Share2, RefreshCw, Heart, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import OneSignal from 'react-onesignal';
 import { playSound } from './utils/audio';
 import { getCoupleTopic, publishState, subscribeToPartner, requestNotificationPermission, sendLocalNotification, fetchLatestState, fetchChatHistory, enableBackgroundNotifications } from './utils/sync';
 
@@ -57,6 +58,26 @@ function App() {
     }
     return null;
   }, [profile.myName, profile.partnerName]);
+
+  // --- OneSignal Integration ---
+  useEffect(() => {
+    const initOneSignal = async () => {
+      try {
+        await OneSignal.init({ 
+          appId: 'd39b50bf-b915-41d3-9f62-d17f89d664d7',
+          allowLocalhostAsSecureOrigin: true,
+          notifyButton: { enable: false }
+        });
+        
+        if (profile.myName) {
+          OneSignal.login(profile.myName);
+        }
+      } catch (err) {
+        console.error('OneSignal Init Error:', err);
+      }
+    };
+    initOneSignal();
+  }, [profile.myName]);
 
   useEffect(() => {
     // Initial fetch from Supabase to ensure persistence
@@ -207,8 +228,8 @@ function App() {
     setNotificationEnabled(granted);
     if (granted) {
       playSound('sparkle');
-      if (coupleTopic) {
-        enableBackgroundNotifications(coupleTopic);
+      if (typeof OneSignal !== 'undefined') {
+        OneSignal.SlidingPrompt.show();
       }
     }
   };

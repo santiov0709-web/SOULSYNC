@@ -33,12 +33,34 @@ export const publishState = async (topic, state) => {
     const { error } = await supabase.from('messages').insert([payload]);
     
     // --- Instant Broadcast ---
-    // Enviar también por canal de broadcast para que llegue al instante sin esperar a la DB
     supabase.channel(`room_${topic}`).send({
       type: 'broadcast',
       event: 'message',
       payload: state,
     });
+
+    // --- OneSignal Push Notification ---
+    // Envia un aviso real si el partner está fuera de la app
+    const partnerName = topic.split('_')[2] === state.sender.toLowerCase() ? topic.split('_')[1] : topic.split('_')[2];
+    
+    const ONESIGNAL_REST_KEY = 'TU_ONESIGNAL_REST_API_KEY'; // El usuario la pondrá
+    
+    if (ONESIGNAL_REST_KEY !== 'TU_ONESIGNAL_REST_API_KEY' && (state.type === 'chat' || state.type === 'nudge')) {
+      fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Authorization': `Basic ${ONESIGNAL_REST_KEY}`
+        },
+        body: JSON.stringify({
+          app_id: 'd39b50bf-b915-41d3-9f62-d17f89d664d7',
+          include_external_user_ids: [partnerName],
+          contents: { "en": state.text || "¡Te han enviado un aviso en SoulSync! ❤️" },
+          headings: { "en": `SoulSync: ${state.sender}` },
+          url: window.location.origin
+        })
+      }).catch(err => console.log('Push error', err));
+    }
     
     if (error) {
       console.error('Supabase write error. Checking fallback.', error.message);
