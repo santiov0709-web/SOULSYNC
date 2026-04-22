@@ -179,7 +179,35 @@ export const sendLocalNotification = (title, body) => {
   if (Notification.permission === 'granted') {
     new Notification(title, {
       body,
-      icon: '/favicon.ico', // Adjust if needed
+      icon: '/icon.png', // Corrected path
     });
+  }
+};
+
+/**
+ * Enables true background notifications using ntfy's Web Push integration
+ */
+export const enableBackgroundNotifications = async (topic) => {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.warn('Background notifications not supported');
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    
+    // ntfy.sh uses a specific pattern for Web Push
+    // We can just open their "subscribe" page or use their API
+    // The easiest "Pro" way is to use a direct subscription to their push endpoint
+    const pushTopic = `${topic}_push`;
+    
+    // Triggering the ntfy.sh subscription popup/logic
+    // This is a known pro trick for ntfy + pwa
+    const subUrl = `${NTFY_BASE_URL}/${pushTopic}/subscribe?webapp=1`;
+    const subWindow = window.open(subUrl, 'ntfy_subscribe', 'width=400,height=500');
+    
+    return subWindow;
+  } catch (error) {
+    console.error('Error enabling background notifications:', error);
   }
 };

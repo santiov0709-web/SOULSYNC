@@ -1,25 +1,16 @@
-self.addEventListener('push', (event) => {
-  const data = event.data ? event.data.json() : { title: 'SoulSync', body: 'Nuevo mensaje de tu pareja' };
-  
-  const options = {
-    body: data.body,
-    icon: '/icon.png',
-    badge: '/icon.png',
-    vibrate: [100, 50, 100],
-    data: {
-      url: self.location.origin
-    }
-  };
-
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
-});
+// Cargar la lógica pro de ntfy para notificaciones en segundo plano
+importScripts('https://ntfy.sh/static/js/sw.js');
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
+  const urlToOpen = event.notification.data?.url || self.location.origin;
   event.waitUntil(
-    clients.openWindow(event.notification.data.url)
+    clients.matchAll({ type: 'window' }).then((windowClients) => {
+      for (let client of windowClients) {
+        if (client.url === urlToOpen && 'focus' in client) return client.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(urlToOpen);
+    })
   );
 });
 

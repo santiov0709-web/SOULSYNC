@@ -7,7 +7,7 @@ import Onboarding from './components/Onboarding';
 import { Share2, RefreshCw, Heart, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { playSound } from './utils/audio';
-import { getCoupleTopic, publishState, subscribeToPartner, requestNotificationPermission, sendLocalNotification, fetchLatestState, fetchChatHistory } from './utils/sync';
+import { getCoupleTopic, publishState, subscribeToPartner, requestNotificationPermission, sendLocalNotification, fetchLatestState, fetchChatHistory, enableBackgroundNotifications } from './utils/sync';
 
 function App() {
   const [profile, setProfile] = useState(
@@ -205,7 +205,12 @@ function App() {
   const handleRequestPermission = async () => {
     const granted = await requestNotificationPermission();
     setNotificationEnabled(granted);
-    if (granted) playSound('sparkle');
+    if (granted) {
+      playSound('sparkle');
+      if (coupleTopic) {
+        enableBackgroundNotifications(coupleTopic);
+      }
+    }
   };
 
   return (
