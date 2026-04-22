@@ -275,16 +275,31 @@ function App() {
           ) : view === 'checkin' ? (
             <CheckInFlow onComplete={handleCheckInComplete} />
           ) : (
-            <Dashboard 
-              userState={userState} 
-              partnerState={partnerState} 
-              setPartnerState={setPartnerState}
-              profile={profile}
-              theme={currentTheme}
-              coupleTopic={coupleTopic}
-              chatMessages={chatMessages}
-              onSendMessage={handleSendMessage}
-            />
+            <>
+              <Dashboard 
+                userState={userState} 
+                partnerState={partnerState} 
+                setPartnerState={setPartnerState}
+                profile={profile}
+                theme={currentTheme}
+                coupleTopic={coupleTopic}
+                chatMessages={chatMessages}
+                onSendMessage={handleSendMessage}
+              />
+              <div className="pb-6 text-center opacity-30 hover:opacity-100 transition-opacity">
+                <button 
+                  onClick={() => {
+                    if (!coupleTopic) return;
+                    const testMsg = { type: 'chat', text: `Test de fondo ${new Date().toLocaleTimeString()} 🚀`, sender: profile.myName };
+                    publishState(coupleTopic, testMsg);
+                    alert('Prueba enviada. SAL DE LA APP AHORA y bloquea el celular para ver si llega.');
+                  }}
+                  className="text-[10px] uppercase tracking-widest text-white border border-white/20 px-3 py-1 rounded-full"
+                >
+                  Diagnóstico Notificaciones
+                </button>
+              </div>
+            </>
           )}
         </div>
       </main>
