@@ -79,6 +79,17 @@ function App() {
     };
 
     loadInitialData();
+
+    // Re-sync when the app becomes visible again (returned from background)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('App visible again, re-syncing...');
+        loadInitialData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [coupleTopic]);
 
   useEffect(() => {
