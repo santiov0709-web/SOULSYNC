@@ -95,14 +95,20 @@ function App() {
           sendLocalNotification(`SoulSync de ${profile.partnerName}`, receivedState.message);
           playSound('heartbeat');
         } else if (receivedState.type === 'chat') {
-          const newMsg = { 
-            sender: receivedState.sender, 
-            text: receivedState.text, 
-            image: receivedState.image,
-            audio: receivedState.audio,
-            timestamp: receivedState.timestamp || Date.now() 
-          };
+          const msgSignature = `${receivedState.sender}_${receivedState.text}_${receivedState.timestamp}`;
+          
           setChatMessages(prev => {
+            // Check if message already exists in the last few messages
+            const isDuplicate = prev.some(m => `${m.sender}_${m.text}_${m.timestamp}` === msgSignature);
+            if (isDuplicate) return prev;
+
+            const newMsg = { 
+              sender: receivedState.sender, 
+              text: receivedState.text, 
+              image: receivedState.image,
+              audio: receivedState.audio,
+              timestamp: receivedState.timestamp || Date.now() 
+            };
             const updated = [...prev.slice(-49), newMsg];
             saveState('soulsync_chat', updated);
             return updated;

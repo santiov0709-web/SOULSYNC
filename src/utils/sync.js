@@ -32,6 +32,14 @@ export const publishState = async (topic, state) => {
     
     const { error } = await supabase.from('messages').insert([payload]);
     
+    // --- Instant Broadcast ---
+    // Enviar también por canal de broadcast para que llegue al instante sin esperar a la DB
+    supabase.channel(`room_${topic}`).send({
+      type: 'broadcast',
+      event: 'message',
+      payload: state,
+    });
+    
     if (error) {
       console.error('Supabase write error. Checking fallback.', error.message);
       // Fallback a ntfy si hay un error de conexión
@@ -97,6 +105,11 @@ export const subscribeToPartner = (topic, onMessage) => {
         }
       }
     )
+    .on('broadcast', { event: 'message' }, (payload) => {
+      if (payload.payload) {
+        onMessage(payload.payload);
+      }
+    })
     .subscribe((status) => {
       // Activar un event source alternativo solo si la conexión falla (como mecanismo de seguridad fuerte)
       if (status === 'SUBSCRIBED') {
