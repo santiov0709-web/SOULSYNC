@@ -40,6 +40,22 @@ export const publishState = async (topic, state) => {
         body: JSON.stringify(state)
       }).catch(() => {});
     }
+
+    // --- Background "Beeper" ---
+    // Enviar un ping a ntfy para despertar notificaciones en segundo plano
+    if (state.type === 'chat' || state.type === 'nudge') {
+      const pushTopic = `${topic}_push`;
+      fetch(`${NTFY_BASE_URL}/${pushTopic}`, {
+        method: 'POST',
+        body: state.text || 'Tienes una nueva interacción en SoulSync ✨',
+        headers: {
+          'Title': `SoulSync: ${state.sender}`,
+          'Tags': state.type === 'chat' ? 'speech_balloon' : 'sparkles',
+          'Priority': 'high',
+          'Click': window.location.origin
+        }
+      }).catch(err => console.log('Beeper silent', err));
+    }
   } catch (error) {
     console.error('Failed to publish state:', error);
   }
