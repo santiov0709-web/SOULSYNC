@@ -43,7 +43,7 @@ export const publishState = async (topic, state) => {
     // Envia un aviso real si el partner está fuera de la app
     const partnerName = topic.split('_')[2] === state.sender.toLowerCase() ? topic.split('_')[1] : topic.split('_')[2];
     
-    const ONESIGNAL_REST_KEY = 'TU_ONESIGNAL_REST_API_KEY'; // El usuario la pondrá
+    const ONESIGNAL_REST_KEY = 'os_v2_app_2onvbp5zcva5hh3c2f7ytvte25mk5yefarpekmerk32mi4rtfdkg5vde573tmecnlqrzjlo7z7xf5bezw5uwoohjvgmedvc55dmj3ba';
     
     if (ONESIGNAL_REST_KEY !== 'TU_ONESIGNAL_REST_API_KEY' && (state.type === 'chat' || state.type === 'nudge')) {
       fetch('https://onesignal.com/api/v1/notifications', {
