@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-family: 'Outfit', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color-scheme: dark;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100dvh;
+    min-height: -webkit-fill-available;
+    overflow: hidden;
+    @apply text-slate-100 bg-slate-950 font-sans selection:bg-purple-500/30;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl;
+  }
+  .glass-button {
+    @apply bg-white/10 hover:bg-white/20 active:bg-white/5 backdrop-blur-md border border-white/30 rounded-2xl transition-all duration-300;
+  }
+  .haptic-active {
+    @apply active:scale-95 transition-transform duration-150;
+  }
+  .vibe-card {
+    @apply bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl transition-colors duration-1000;
+  }
+  
+  .theme-nicole .vibe-card {
+    @apply bg-white/60 border-pink-200/50 shadow-[0_20px_50px_rgba(244,63,94,0.1)];
+    color: #831843;
+  }
+  
+  .theme-nicole .text-white {
+    color: #831843 !important;
+  }
+  
+  .theme-nicole .text-white\/90 {
+    color: #9d174d !important;
+  }
+
+  .theme-nicole .text-white\/50, 
+  .theme-nicole .text-white\/60,
+  .theme-nicole .text-white\/40,
+  .theme-nicole .text-white\/30 {
+    color: #be123c !important;
+    opacity: 0.7;
+  }
+
+  .theme-nicole .bg-white\/10 {
+    background-color: rgba(244, 114, 182, 0.1) !important;
+  }
+
+  .theme-nicole .bg-white\/5 {
+    background-color: rgba(0, 0, 0, 0.03) !important;
+  }
+
+  .theme-nicole .border-white\/10,
+  .theme-nicole .border-white\/20,
+  .theme-nicole .border-white\/30 {
+    border-color: rgba(244, 114, 182, 0.2) !important;
+  }
+
+  .theme-santiago .vibe-card {
+    @apply bg-[#0f172a]/60 border-[#3b82f6]/20 shadow-[0_20px_50px_rgba(37,99,235,0.15)];
+  }
+}
+
+/* Specific theme background fix */
+.theme-nicole {
+  background-color: #fff1f2 !important;
+}
+
+.theme-nicole canvas {
+  opacity: 0.8;
+}
